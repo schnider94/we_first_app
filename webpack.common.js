@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const fs = require('fs');
 
-const readPages = url => {
+const readPages = (url, env) => {
     return fs.readdirSync(url).reduce((acc, curr) => {
         const name = curr.replace('.ts', '');
         const filename = name === 'index' ? 'index.html' : `${name}/index.html`;
@@ -10,6 +10,7 @@ const readPages = url => {
         acc.entry[name] = `${url}/${curr}`;
 
         acc.plugins.push(new HtmlWebpackPlugin({
+            base: env.assetPath,
             title: name.charAt(0).toUpperCase() + name.slice(1),
             filename,
             template: `src/index.html`,
@@ -24,12 +25,12 @@ const readPages = url => {
 };
 
 module.exports = env => ({
-    ...readPages('./src/pages'),
+    ...readPages('./src/pages', env),
     output: {
         filename: 'js/[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
         clean: true,
-        publicPath: `/${env.assetPath ?? ''}`,
+        publicPath: '/',
         assetModuleFilename: 'assets/[name][ext]',
     },
     resolve: {

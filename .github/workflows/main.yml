@@ -16,7 +16,7 @@ jobs:
       - name: Install and Build 🔧
         run: |
           npm ci
-          npm run build -- --env assetPath=we_first_app/
+          npm run build -- --env assetPath=/we_first_app/
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
