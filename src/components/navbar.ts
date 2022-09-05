@@ -18,21 +18,21 @@ const links = createComponent<Props>('div', (props: Props) => {
             classes: props.page === Page.home ? ['is-active'] : undefined,
             text: 'Home',
             attributes: {
-                href: '/',
+                href: '',
             },
         }),
         link({
             classes: props.page === Page.contents ? ['is-active'] : undefined,
             text: 'Contents',
             attributes: {
-                href: '/contents',
+                href: 'contents',
             },
         }),
         link({
             classes: props.page === Page.about ? ['is-active'] : undefined,
             text: 'About',
             attributes: {
-                href: '/about',
+                href: 'about',
             },
         }),
     ];
