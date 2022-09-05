@@ -1,6 +1,5 @@
 import logoSrc from 'assets/logo.webp';
 import { createComponent, HTMLProps } from 'utils/core';
-import img from './standard/img';
 import link from './standard/link';
 
 export enum Page {
@@ -41,7 +40,7 @@ const links = createComponent<Props>('div', (props: Props) => {
 
 const logo = createComponent('div', () => {
     return [
-        img({
+        createComponent('img')({
             attributes: {
                 src: logoSrc,
                 alt: 'Logo',

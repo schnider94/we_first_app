@@ -2,7 +2,10 @@
 export interface HTMLProps {
     id?: string,
     classes?: string[],
+    onBlur?: (event: FocusEvent) => void,
+    onInput?: (event: InputEvent) => void,
     onClick?: (event: Event) => void,
+    onSubmit?: (event: SubmitEvent) => void,
     attributes?: {
         [name: string]: any
     }
@@ -10,7 +13,7 @@ export interface HTMLProps {
 
 type renderHandler = (props: HTMLProps) => (string|HTMLElement)[];
 
-export function createComponent<T extends HTMLProps>(tag: string, fn: renderHandler): (props: T) => HTMLElement {
+export function createComponent<T extends HTMLProps>(tag: string, fn: renderHandler = () => []): (props: T) => HTMLElement {
     return (props: T) => {
         const element = document.createElement(tag);
         const children = fn(props);
@@ -25,6 +28,9 @@ export function createComponent<T extends HTMLProps>(tag: string, fn: renderHand
         if (props.id) element.id = props.id;
         if (props.classes) element.classList.add(...props.classes);
         if (props.onClick) element.addEventListener('click', props.onClick);
+        if (props.onBlur) element.addEventListener('blur', props.onBlur);
+        if (props.onInput) element.addEventListener('input', props.onInput);
+        if (props.onSubmit) element.addEventListener('submit', props.onSubmit);
 
         if (props.attributes) {
             Object.entries(props.attributes).forEach(([key, value]) => element.setAttribute(key, value));

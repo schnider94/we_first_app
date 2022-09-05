@@ -23,13 +23,13 @@ const readPages = url => {
     });
 };
 
-module.exports = {
+module.exports = env => ({
     ...readPages('./src/pages'),
     output: {
         filename: 'js/[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
         clean: true,
-        publicPath: '/',
+        publicPath: `/${env.assetPath ?? ''}`,
         assetModuleFilename: 'assets/[name][ext]',
     },
     resolve: {
@@ -63,4 +63,4 @@ module.exports = {
             },
         ],
     },
-};
+});

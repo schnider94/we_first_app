@@ -11,7 +11,7 @@ export default createComponent<Props>('div', (props: Props) => {
     return [
         createComponent('div', () => [
             createComponent('span', () => [
-                props.quote,
+                !!props.quote ? props.quote : 'Click `Generate` to start generating quotes ---->',
             ])({
                 classes: ['quote']
             })

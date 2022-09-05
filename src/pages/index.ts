@@ -1,7 +1,18 @@
 import "styles/style.scss";
 
+import { createApp, createComponent } from "utils/core";
+
 import navbar, { Page } from "components/navbar";
 
-const navbarElem = navbar({ page: Page.home });
+const main = createComponent('main', () => {
+    return [
+        'Home',
+    ];
+});
 
-document.body.append(navbarElem);
+const root = createComponent('div', () => [
+    navbar({ page: Page.home }),
+    main({}),
+]);
+
+createApp('app', root);
