@@ -1,26 +1,20 @@
+import { createComponent, HTMLProps } from "utils/core";
 import favorite from "./favorite";
 
-const template = `
-    <h1>
-        Favorites
-    </h1>
-`;
-
-interface Props {
+interface Props extends HTMLProps {
     quotes: string[],
     onRemoveFromFavorite: (quote: string) => void,
 };
 
-export default (props: Props) => {
-    const element = document.createElement('div');
-    element.innerHTML = template;
-
-    const elements = props.quotes.map(quote => favorite({
+export default createComponent<Props>('div', (props: Props) => {
+    const favorites = props.quotes.map(quote => favorite({
+        classes: ['row'],
         quote,
         onRemoveFromFavorite: props.onRemoveFromFavorite,
     }));
 
-    element.append(...elements);
-
-    return element;
-};
+    return [
+        createComponent('h1', () => ['Favorites'])({}),
+        ...favorites,
+    ];
+});

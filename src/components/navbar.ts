@@ -1,15 +1,7 @@
-import logo from 'assets/logo.webp';
-
-const template = `
-    <div class="left">
-        <a href="/">Home</a>
-        <a href="/contents">Contents</a>
-        <a href="/about">About</a>
-    </div>
-    <div class="right">
-        <img alt="Logo" src="${logo}" />
-    </div>
-`;
+import logoSrc from 'assets/logo.webp';
+import { createComponent, HTMLProps } from 'utils/core';
+import img from './standard/img';
+import link from './standard/link';
 
 export enum Page {
     'home',
@@ -17,25 +9,53 @@ export enum Page {
     'about'
 }
 
-interface Props {
+interface Props extends HTMLProps {
     page: Page,
 }
 
-const pageIndex = (page: Page) => {
-    switch (page) {
-        case Page.home: return 0;
-        case Page.contents: return 1;
-        case Page.about: return 2;
-    }
-}
+const links = createComponent<Props>('div', (props: Props) => {
+    return [
+        link({
+            classes: props.page === Page.home ? ['is-active'] : undefined,
+            text: 'Home',
+            attributes: {
+                href: '/',
+            },
+        }),
+        link({
+            classes: props.page === Page.contents ? ['is-active'] : undefined,
+            text: 'Contents',
+            attributes: {
+                href: '/contents',
+            },
+        }),
+        link({
+            classes: props.page === Page.about ? ['is-active'] : undefined,
+            text: 'About',
+            attributes: {
+                href: '/about',
+            },
+        }),
+    ];
+});
 
-export default (props: Props) => {
-    const element = document.createElement('nav');
-    element.classList.add('flex-row');
-    element.innerHTML = template;
+const logo = createComponent('div', () => {
+    return [
+        img({
+            attributes: {
+                src: logoSrc,
+                alt: 'Logo',
+            },
+        }),
+    ];
+});
 
-    const activeLink = element.getElementsByTagName('a')[pageIndex(props.page)];
-    activeLink.classList.add('is-active');
-
-    return element;
-};
+export default createComponent<Props>('nav', (props: Props) => {
+    return [
+        links({
+            classes: ['left'],
+            ...props,
+        }),
+        logo({}),
+    ];
+});

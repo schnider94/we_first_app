@@ -1,32 +1,38 @@
-import button from "./button";
+import { createComponent, HTMLProps } from "utils/core";
+import button from "./standard/button";
 
-const template = (text: string) => `
-    <div class="quote-favorite">
-        <div class="left">
-            <span class="quote">${text}</span>
-        </div>
-        <div class="right">
-        </div>
-    </div>
-`;
-
-interface Props {
+interface Props extends HTMLProps {
     onRemoveFromFavorite: (quote: string) => void,
     quote: string,
-};
-
-export default (props: Props) => {
-    const removeQuote = () => props.onRemoveFromFavorite(props.quote);
-
-    const element = document.createElement('div');
-    element.innerHTML = template(props.quote);
-
-    const removeBtn = button({
-        text: 'Remove',
-        onClick: removeQuote,
-    });
-
-    element.querySelector('.quote-favorite > .right').append(removeBtn);
-
-    return element;
 }
+
+interface TextProps extends HTMLProps {
+    text: string,
+}
+
+const left = createComponent<TextProps>('div', ({ text }: TextProps) => [
+    createComponent<TextProps>('span', ({ text }: TextProps) => [text])({
+        classes: ['quote'],
+        text,
+    })
+]);
+
+const right = createComponent<Props>('div', (props: Props) => [
+    button({
+        onClick: () => props.onRemoveFromFavorite(props.quote),
+        text: 'Remove',
+    }),
+]);
+
+export default createComponent<Props>('div', (props: Props) => {
+    return [
+        left({
+            classes: ['left'],
+            text: props.quote,
+        }),
+        right({
+            classes: ['right'],
+            ...props,
+        }),
+    ];
+});

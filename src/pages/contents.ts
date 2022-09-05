@@ -1,41 +1,56 @@
 import "styles/style.scss";
 
+import { createApp, createComponent } from "utils/core";
 import store from "utils/store";
+import { quote as quoteAPI } from "utils/api";
 
 import navbar, { Page } from "components/navbar";
-import layout from "components/layout";
 import quote from "components/quote";
 import favorites from "components/favorites";
 
-const navbarElem = navbar({ page: Page.contents });
-const main = layout();
-let favoritesElem: HTMLElement;
+const main = createComponent('main', () => {
+    const addQuote = () => {
+        const currentQuote = store.config.currentQuote;
 
-document.body.append(navbarElem, main);
+        if (!currentQuote || store.quotes.includes(currentQuote)) {
+            reloadQuote();
 
-const renderFavorites = () => {
-    if (favoritesElem) favoritesElem.remove();
-    favoritesElem = favorites({ quotes: store.quotes, onRemoveFromFavorite: removeQuote });
+            return;
+        }
 
-    main.append(favoritesElem);
-};
+        store.quotes.push(currentQuote);
+        reloadQuote();
+    };
 
-const addQuote = (quote: string) => {
-    if (store.quotes.includes(quote)) return;
-    store.quotes.push(quote);
+    const removeQuote = (quote: string) => {
+        const index = store.quotes.findIndex(text => quote === text);
+        store.quotes.splice(index, 1);
+    };
 
-    renderFavorites();
-};
+    const reloadQuote = () => {
+        quoteAPI().then(response => {
+            store.config.currentQuote = response;
+        });
+    }
 
-const removeQuote = (quote: string) => {
-    const index = store.quotes.findIndex(text => quote === text);
-    store.quotes.splice(index, 1);
+    return [
+        quote({
+            classes: ['quote-generator'],
+            onReloadCurrentQuote: reloadQuote,
+            onSaveToFavorite: addQuote,
+            quote: store.config.currentQuote,
+        }),
+        favorites({
+            classes: ['quote-favorite'],
+            onRemoveFromFavorite: removeQuote,
+            quotes: store.quotes,
+        })
+    ];
+});
 
-    renderFavorites();
-};
+const root = createComponent('div', () => [
+    navbar({ page: Page.contents }),
+    main({}),
+]);
 
-const quoteElem = quote({ onSaveToFavorite: addQuote });
-
-main.append(quoteElem);
-
-renderFavorites();
+createApp('app', root);

@@ -1,53 +1,34 @@
-import { quote } from "utils/api";
-import button from "./button";
+import { createComponent, HTMLProps } from "utils/core";
+import button from "./standard/button";
 
-const template = `
-    <div class="quote-generator">
-        <div class="left">
-            <span class="quote">Quote loading…</span>
-        </div>
-        <div class="right">
-        </div>
-    </div>
-`;
-
-interface Props {
-    onSaveToFavorite: (quote: string) => void,
+interface Props extends HTMLProps {
+    quote: string,
+    onReloadCurrentQuote: () => void,
+    onSaveToFavorite: () => void,
 };
 
-export default (props: Props) => {
-    let currentQuote = '';
-
-    const reloadQuote = () => {
-        quote().then(text => {
-            currentQuote = text;
-            quoteText.textContent = text;
-        });
-    };
-
-    const saveQuote = () => {
-        props.onSaveToFavorite(currentQuote);
-        reloadQuote();
-    };
-
-    const element = document.createElement('div');
-    element.innerHTML = template;
-
-    const quoteText = element.querySelector('.quote-generator > .left > span');
-
-    const generateBtn = button({
-        text: 'Generate',
-        onClick: reloadQuote,
-    });
-
-    const toggleBtn = button({
-        text: 'Favorite',
-        onClick: saveQuote,
-    });
-
-    element.querySelector('.quote-generator > .right').append(generateBtn);
-    element.querySelector('.quote-generator > .right').append(toggleBtn);
-    reloadQuote();
-
-    return element;
-}
+export default createComponent<Props>('div', (props: Props) => {
+    return [
+        createComponent('div', () => [
+            createComponent('span', () => [
+                props.quote,
+            ])({
+                classes: ['quote']
+            })
+        ])({
+            classes: ['left'],
+        }),
+        createComponent('div', () => [
+            button({
+                text: 'Generate',
+                onClick: props.onReloadCurrentQuote,
+            }),
+            button({
+                text: 'Favorite',
+                onClick: props.onSaveToFavorite,
+            }),
+        ])({
+            classes: ['right'],
+        }),
+    ];
+});

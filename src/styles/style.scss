@@ -3,7 +3,7 @@
   box-sizing: border-box;
 }
 
-body {
+body, #app {
   width: 100%;
   margin: 0;
   padding: 0;
@@ -11,7 +11,7 @@ body {
 
 // BASIC STYLING
 
-body > main {
+#app main {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -20,7 +20,7 @@ body > main {
 
 // NAVIGATION
 
-body > nav {
+#app nav {
   background-color: #EDEBD7;
   width: 100%;
   padding: 20px;
@@ -118,30 +118,36 @@ button {
 
 .quote-favorite {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   padding: 10px;
   width: 100%;
   max-width: 1000px;
-  border-bottom: solid;
-  align-items: center;
   margin-left: auto;
   margin-right: auto;
+  justify-content: center;
 
   .quote {
     font-size: 1.2rem;
   }
 
-  .left, .right {
+  > .row {
     display: flex;
     flex-direction: row;
-    flex-grow: 1;
-    flex-basis: 0px;
-    gap: 10px;
-  }
+    border-bottom: dashed;
+    padding: 10px;
 
-  .right {
-    justify-content: flex-end;
-    flex-direction: column;
-    align-items: flex-end;
+    .left, .right {
+      display: flex;
+      flex-direction: row;
+      flex-grow: 1;
+      flex-basis: 0px;
+      gap: 10px;
+    }
+  
+    .right {
+      justify-content: flex-end;
+      flex-direction: column;
+      align-items: flex-end;
+    }
   }
 }

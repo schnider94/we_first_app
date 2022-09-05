@@ -1,13 +1,40 @@
+import app from 'utils/core';
+
+interface Config {
+    currentQuote: string,
+}
 
 interface Store {
+    config: Config,
     quotes: string[],
 }
+
+const configHandler: ProxyHandler<Config> = {
+    set(target, prop, value) {
+        const result = Reflect.set(target, prop, value);
+
+        app.reload();
+
+        return result;
+    },
+    deleteProperty(target, prop) {
+        const result = Reflect.deleteProperty(target, prop);
+
+        app.reload();
+
+        return true;
+    },
+};
 
 const quoteHandler: ProxyHandler<string[]> = {
     set(target, prop, value) {
         if (prop !== 'length') localStorage.setItem('quotes', JSON.stringify([...target, value]));
 
-        return Reflect.set(target, prop, value);
+        const result = Reflect.set(target, prop, value);
+
+        app.reload();
+
+        return result;
     },
     deleteProperty(target, prop) {
         const index = parseInt(prop.toString());
@@ -17,6 +44,8 @@ const quoteHandler: ProxyHandler<string[]> = {
         localStorage.setItem('quotes', JSON.stringify(newArray));
 
         delete target[index];
+
+        app.reload();
 
         return true;
     },
@@ -31,6 +60,9 @@ const quoteHandler: ProxyHandler<string[]> = {
 
 const store: Store = {
     quotes: new Proxy([], quoteHandler),
+    config: new Proxy({
+        currentQuote: '',
+    }, configHandler),
 };
 
 export default store;
