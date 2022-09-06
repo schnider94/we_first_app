@@ -13,10 +13,10 @@ export default createComponent<Props>('div', (props: Props) => {
             createComponent('span', () => [
                 !!props.quote ? props.quote : 'Click `Generate` to start generating quotes ---->',
             ])({
-                classes: ['quote']
+                classes: 'quote'
             })
         ])({
-            classes: ['left'],
+            classes: 'left',
         }),
         createComponent('div', () => [
             button({
@@ -28,7 +28,7 @@ export default createComponent<Props>('div', (props: Props) => {
                 onClick: props.onSaveToFavorite,
             }),
         ])({
-            classes: ['right'],
+            classes: 'right',
         }),
     ];
 });

@@ -1,47 +1,102 @@
 
 export interface HTMLProps {
-    id?: string,
-    classes?: string[],
+    id?: string|(() => string),
+    classes?: string|(() => string),
+    attributes?: {
+        [name: string]: any|(() => any)
+    },
     onBlur?: (event: FocusEvent) => void,
     onInput?: (event: InputEvent) => void,
     onClick?: (event: Event) => void,
-    onSubmit?: (event: SubmitEvent) => void,
-    attributes?: {
-        [name: string]: any
-    }
+    onSubmit?: (event: SubmitEvent) => void
 }
+
+interface StoreMap {
+    [key: string]: {
+        element: HTMLElement,
+        reload: () => void,
+    }[]
+}
+
+const storeMap: StoreMap = {};
 
 type renderHandler = (props: HTMLProps) => (string|HTMLElement)[];
 
-export function createComponent<T extends HTMLProps>(tag: string, fn: renderHandler = () => []): (props: T) => HTMLElement {
+const getValue = (value: any|(() => any)) => {
+    if (typeof value === 'function') return value();
+    if (typeof value !== 'function') return value;
+};
+
+export function createComponent<T extends HTMLProps>(tag: string, fn: renderHandler = () => [], stores: string[] = []): (props: T) => HTMLElement {
     return (props: T) => {
         const element = document.createElement(tag);
-        const children = fn(props);
+        let clickListener: EventListener;
+        let blurListener: EventListener;
+        let inputListener: EventListener;
+        let submitListener: EventListener;
 
-        const elements = children.map(child => {
-            if (typeof child === 'string') return child;
-            return child;
-        })
+        const reload = () => {
+            const children = fn(props);
 
-        element.append(...elements);
+            for (const child of Array.from(element.children)) child.remove();
 
-        if (props.id) element.id = props.id;
-        if (props.classes) element.classList.add(...props.classes);
-        if (props.onClick) element.addEventListener('click', props.onClick);
-        if (props.onBlur) element.addEventListener('blur', props.onBlur);
-        if (props.onInput) element.addEventListener('input', props.onInput);
-        if (props.onSubmit) element.addEventListener('submit', props.onSubmit);
+            const elements = children.map(child => {
+                if (typeof child === 'string') return child;
+                return child;
+            })
 
-        if (props.attributes) {
-            Object.entries(props.attributes).forEach(([key, value]) => element.setAttribute(key, value));
-        }
+            element.append(...elements);
+
+            if (props.id) element.id = getValue(props.id);
+            if (props.classes) element.className = getValue(props.classes);
+            if (props.attributes) {
+                Object.entries(props.attributes).forEach(([key, value]) => element.setAttribute(key, getValue(value)));
+            }
+
+            if (props.onClick) {
+                element.removeEventListener('click', clickListener);
+                clickListener = props.onClick;
+                element.addEventListener('click', clickListener);
+            }
+
+            if (props.onBlur) {
+                element.removeEventListener('blur', blurListener);
+                blurListener = props.onBlur;
+                element.addEventListener('blur', blurListener);
+            }
+
+            if (props.onInput) {
+                element.removeEventListener('input', inputListener);
+                inputListener = props.onInput;
+                element.addEventListener('input', inputListener);
+            }
+
+            if (props.onSubmit) {
+                element.removeEventListener('submit', submitListener);
+                submitListener = props.onSubmit;
+                element.addEventListener('submit', submitListener);
+            }
+        };
+
+        const component = {
+            element,
+            reload,
+        };
+
+        stores.forEach(store => {
+            if (!storeMap[store]) storeMap[store] = [];
+
+            storeMap[store].push(component);
+        });
+
+        reload();
 
         return element;
     };
 }
 
 interface App {
-    reload: () => void,
+    reload: (id: string) => void,
     rootElem: HTMLElement,
 }
 
@@ -55,15 +110,11 @@ export function createApp(id: string, root: (props: HTMLProps) => HTMLElement) {
 
     if (!rootElem) throw new Error(`Root element with id "${id}" couldn't be found`);
 
-    const reload = () => {
-        if (rootElem.children && rootElem.children.length > 0) {
-            rootElem.childNodes.forEach(child => child.remove());
-        }
-
-        rootElem.append(root({}));
+    const reload = (id: string) => {
+        storeMap[id]?.forEach(child => child.reload());
     }
 
-    reload();
+    rootElem.append(root({}));
 
     app.reload = reload;
     app.rootElem = rootElem;

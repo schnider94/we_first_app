@@ -8,7 +8,7 @@ interface Props extends HTMLProps {
 
 export default createComponent<Props>('div', (props: Props) => {
     const favorites = props.quotes.map(quote => favorite({
-        classes: ['row'],
+        classes: 'row',
         quote,
         onRemoveFromFavorite: props.onRemoveFromFavorite,
     }));

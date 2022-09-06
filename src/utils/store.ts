@@ -6,9 +6,13 @@ interface Config {
 
 interface Form {
     name: string,
+    hasErrorName: boolean,
     email: string,
+    hasErrorEmail: boolean,
     secret: string,
+    hasErrorSecret: boolean,
     rating: number,
+    hasErrorRating: boolean,
 }
 
 interface Store {
@@ -21,14 +25,14 @@ const configHandler: ProxyHandler<Config> = {
     set(target, prop, value) {
         const result = Reflect.set(target, prop, value);
 
-        app.reload();
+        app.reload('config');
 
         return result;
     },
     deleteProperty(target, prop) {
         const result = Reflect.deleteProperty(target, prop);
 
-        app.reload();
+        app.reload('config');
 
         return true;
     },
@@ -38,14 +42,14 @@ const formHandler: ProxyHandler<Form> = {
     set(target, prop, value) {
         const result = Reflect.set(target, prop, value);
 
-        app.reload();
+        app.reload('form');
 
         return result;
     },
     deleteProperty(target, prop) {
         const result = Reflect.deleteProperty(target, prop);
 
-        app.reload();
+        app.reload('form');
 
         return true;
     },
@@ -57,7 +61,7 @@ const quoteHandler: ProxyHandler<string[]> = {
 
         const result = Reflect.set(target, prop, value);
 
-        app.reload();
+        app.reload('quotes');
 
         return result;
     },
@@ -70,7 +74,7 @@ const quoteHandler: ProxyHandler<string[]> = {
 
         delete target[index];
 
-        app.reload();
+        app.reload('quotes');
 
         return true;
     },
@@ -93,6 +97,10 @@ const store: Store = {
         email: '',
         secret: '',
         rating: 10,
+        hasErrorName: false,
+        hasErrorEmail: false,
+        hasErrorSecret: false,
+        hasErrorRating: false,
     }, formHandler),
 };
 

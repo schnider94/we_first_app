@@ -15,21 +15,21 @@ interface Props extends HTMLProps {
 const links = createComponent<Props>('div', (props: Props) => {
     return [
         link({
-            classes: props.page === Page.home ? ['is-active'] : undefined,
+            classes: props.page === Page.home ? 'is-active' : undefined,
             text: 'Home',
             attributes: {
                 href: '',
             },
         }),
         link({
-            classes: props.page === Page.contents ? ['is-active'] : undefined,
+            classes: props.page === Page.contents ? 'is-active' : undefined,
             text: 'Contents',
             attributes: {
                 href: 'contents',
             },
         }),
         link({
-            classes: props.page === Page.about ? ['is-active'] : undefined,
+            classes: props.page === Page.about ? 'is-active' : undefined,
             text: 'About',
             attributes: {
                 href: 'about',
@@ -52,7 +52,7 @@ const logo = createComponent('div', () => {
 export default createComponent<Props>('nav', (props: Props) => {
     return [
         links({
-            classes: ['left'],
+            classes: 'left',
             ...props,
         }),
         logo({}),

@@ -12,7 +12,7 @@ interface TextProps extends HTMLProps {
 
 const left = createComponent<TextProps>('div', ({ text }: TextProps) => [
     createComponent<TextProps>('span', ({ text }: TextProps) => [text])({
-        classes: ['quote'],
+        classes: 'quote',
         text,
     })
 ]);
@@ -27,11 +27,11 @@ const right = createComponent<Props>('div', (props: Props) => [
 export default createComponent<Props>('div', (props: Props) => {
     return [
         left({
-            classes: ['left'],
+            classes: 'left',
             text: props.quote,
         }),
         right({
-            classes: ['right'],
+            classes: 'right',
             ...props,
         }),
     ];

@@ -35,18 +35,18 @@ const main = createComponent('main', () => {
 
     return [
         quote({
-            classes: ['quote-generator'],
+            classes: 'quote-generator',
             onReloadCurrentQuote: reloadQuote,
             onSaveToFavorite: addQuote,
             quote: store.config.currentQuote,
         }),
         favorites({
-            classes: ['quote-favorite'],
+            classes: 'quote-favorite',
             onRemoveFromFavorite: removeQuote,
             quotes: store.quotes,
         })
     ];
-});
+}, ['config', 'quotes']);
 
 const root = createComponent('div', () => [
     navbar({ page: Page.contents }),
