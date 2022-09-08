@@ -1,4 +1,5 @@
 import "styles/style.scss";
+import "styles/about.scss";
 
 import { createApp, createComponent } from "utils/core";
 import store from "utils/store";
